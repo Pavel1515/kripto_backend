@@ -22,9 +22,9 @@ const Users = sequelize.define(
       type: DataTypes.STRING,
       defaultValue: "USER",
     },
-    role: {
-      type: DataTypes.STRING,
-      defaultValue: "USER",
+    free: {
+      type: DataTypes.INTEGER,
+      defaultValue: 3,
     },
   },
   {}

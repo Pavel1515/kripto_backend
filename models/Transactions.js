@@ -17,6 +17,30 @@ const Transactions = sequelize.define(
       type: DataTypes.STRING,
       allowNull: false,
     },
+    address: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    network: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    notification: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: true,
+    },
+    amount: {
+      type: DataTypes.INTEGER,
+    },
+    currencyReception: {
+      type: DataTypes.STRING,
+    },
+    currencyExchange: {
+      type: DataTypes.STRING,
+    },
+    itFree: {
+      type: DataTypes.BOOLEAN,
+    },
   },
   {}
 );
