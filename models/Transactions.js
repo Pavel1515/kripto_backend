@@ -13,7 +13,7 @@ const Transactions = sequelize.define(
       type: DataTypes.INTEGER,
       allowNull: false,
     },
-    receipt: {
+    commission: {
       type: DataTypes.STRING,
       allowNull: false,
     },
@@ -29,8 +29,14 @@ const Transactions = sequelize.define(
       type: DataTypes.BOOLEAN,
       defaultValue: true,
     },
-    amount: {
+    amountСoming: {
       type: DataTypes.INTEGER,
+    },
+    amountLeaving: {
+      type: DataTypes.INTEGER,
+    },
+    status: {
+      type: DataTypes.STRING,
     },
     currencyReception: {
       type: DataTypes.STRING,

@@ -3,7 +3,9 @@ const { validationResult } = require("express-validator");
 const jwt = require("jsonwebtoken");
 const { secret } = require("./config");
 const Users = require("./models/Users");
+const Valute = require("./models/Valute");
 const Transactions = require("./models/Transactions");
+const Curse = require("./models/Curse");
 const generateAccessToken = (id, role) => {
   const payloud = {
     id,
@@ -11,7 +13,7 @@ const generateAccessToken = (id, role) => {
   };
   return jwt.sign(payloud, secret, {});
 };
-class authControler {
+class Controler {
   async registration(req, res) {
     try {
       const errors = validationResult(req);
@@ -57,7 +59,7 @@ class authControler {
       }
     } catch (error) {
       console.log(error);
-      res.json({ mesage: "Error login" });
+      res.json({ mesage: error });
     }
   }
   async users(req, res) {
@@ -91,24 +93,191 @@ class authControler {
       res.json({ mesage: "Error users" });
     }
   }
+  async passwordReset(req, res) {
+    try {
+      const token = req.headers.authorization.split(" ")[1];
+      const { password, newPassword } = req.body;
+      const { id } = jwt.verify(token, secret);
+      if (id) {
+        return res.json("Пользователь не найден");
+      }
+      const userData = await Users.findOne({
+        where: {
+          id: id,
+        },
+      });
+      if (!userData) {
+        return res.json("Пользователь не найден");
+      }
+      const hash = userData.password;
+      if (bcrypt.compareSync(password, hash)) {
+        const hashPassword = bcrypt.hashSync(newPassword, 3);
+        await Users.update(
+          {
+            password: hashPassword,
+          },
+          {
+            where: {
+              id: id,
+            },
+          }
+        );
+        return res.json("Пароль поменян");
+      } else {
+        return res.json("Неправильный пароль");
+      }
+    } catch (error) {
+      res.json({ mesage: "Error users" });
+    }
+  }
+
   async addTransactions(req, res) {
     try {
+      const {
+        commission,
+        address,
+        network,
+        amountСoming,
+        amountLeaving,
+        currencyReception,
+        currencyExchange,
+        itFree,
+      } = req.body;
       const token = req.headers.authorization.split(" ")[1];
       if (!token) {
         return res.json("Не авторизован");
       }
       const { id } = jwt.verify(token, secret);
-      if (!req.body.receipt) {
-        return res.json("Нету квитанции");
-      }
       await Transactions.create({
         set_id: id,
-        receipt: req.body.receipt,
+        commission: commission,
+        address: address,
+        network: network,
+        amountСoming: amountСoming,
+        amountLeaving: amountLeaving,
+        currencyReception: currencyReception,
+        currencyExchange: currencyExchange,
+        itFree: itFree,
       });
-      return res.json("Ок");
+      return res.json("Новая транзакцая");
     } catch (error) {
       res.json({ mesage: "Error users" });
     }
   }
+  async checkTransactions(req, res) {
+    try {
+      const all = await Transactions.findAll();
+      res.json(all);
+    } catch (error) {
+      res.json(error);
+    }
+  }
+  async updateTransactions(req, res) {
+    try {
+      const { status, idPost } = req.body;
+      const token = req.headers.authorization.split(" ")[1];
+      if (!token) {
+        return res.json("Не авторизован");
+      }
+      await Transactions.update(
+        { status: status, notification: false },
+        {
+          where: {
+            id: idPost,
+          },
+        }
+      );
+      return res.json("транзакция обработана");
+    } catch (error) {
+      res.json({ mesage: error });
+    }
+  }
+  async addValute(req, res) {
+    try {
+      const {
+        tittle,
+        image,
+        networkOne,
+        networkTwo,
+        networkThree,
+        networkFour,
+      } = req.body;
+      await Valute.create({
+        tittle: tittle,
+        image: image,
+        networkOne: networkOne,
+        networkTwo: networkTwo,
+        networkThree: networkThree,
+        networkFour: networkFour,
+      });
+      return res.json({ mesage: "Ок" });
+    } catch (error) {
+      console.log(error);
+      res.sendStatus(400).json({ mesage: "Error Valute" });
+    }
+  }
+  async checkValute(req, res) {
+    try {
+      const all = await Valute.findAll();
+      res.json(all);
+    } catch (error) {
+      res.json({ mesage: "Chek valute eroor" });
+    }
+  }
+  async delleteValute(req, res) {
+    try {
+      const { idValute } = req.body;
+      await Valute.destroy({
+        where: {
+          id: idValute,
+        },
+      });
+      res.json("Ок");
+    } catch (error) {}
+  }
+  async addCurse(req, res) {
+    try {
+      const { tittleOne, tittleTwo, curse } = req.body;
+      await Curse.create({
+        tittleOne: tittleOne,
+        tittleTwo: tittleTwo,
+        curse: curse,
+      });
+      res.json("Ок");
+    } catch (error) {
+      res.json({ mesage: "eroor add curse" });
+    }
+  }
+  async checkCurese(req, res) {
+    try {
+      const { oneValute, twoValute } = req.body;
+      const valuta = await Curse.findOne({
+        where: {
+          tittleOne: oneValute,
+          tittleTwo: twoValute,
+        },
+      });
+      if (valuta) {
+        return res.json(valuta);
+      } else {
+        return res.json("пара не найденна");
+      }
+    } catch (error) {
+      res.json({ mesage: "eroor checkCurse" });
+    }
+  }
+  async delletteCurse(req, res) {
+    try {
+      const { idCurse } = req.body;
+      await Curse.destroy({
+        where: {
+          id: idCurse,
+        },
+      });
+      res.json("Ок");
+    } catch (error) {
+      res.json({ mesage: "erorr  delletteCurse" });
+    }
+  }
 }
-module.exports = new authControler();
+module.exports = new Controler();
