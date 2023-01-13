@@ -16,26 +16,23 @@ router.post(
 router.post("/login", controler.login);
 router.get("/users", roleMiddleware(["ADMIN"]), controler.users);
 router.get("/user", authMiddlwaer, controler.user);
-router.put("/password", authMiddlwaer, controler.passwordReset);
+router.post("/password", authMiddlwaer, controler.passwordReset);
 router.post("/add", authMiddlwaer, controler.addTransactions);
-router.get("/all", roleMiddleware(["ADMIN"]), controler.checkTransactions);
-router.put(
+router.post(
   "/processing",
   roleMiddleware(["ADMIN"]),
   controler.updateTransactions
 );
 router.post("/addvalute", roleMiddleware(["ADMIN"]), controler.addValute);
 router.get("/chekvalute", controler.checkValute);
-router.delete(
+router.post(
   "/deletevalute",
   roleMiddleware(["ADMIN"]),
   controler.delleteValute
 );
 router.post("/addcurse", roleMiddleware(["ADMIN"]), controler.addCurse);
-router.get("/chekcurse", controler.checkCurese);
-router.delete(
-  "/deletecurse",
-  roleMiddleware(["ADMIN"]),
-  controler.delletteCurse
-);
+router.post("/chekcurse", controler.checkCurese);
+router.get("/chek", controler.checkList);
+router.post("/deletecurse", roleMiddleware(["ADMIN"]), controler.delletteCurse);
+router.get("/all", controler.checkTransactions);
 module.exports = router;

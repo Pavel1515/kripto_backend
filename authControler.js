@@ -11,7 +11,7 @@ const generateAccessToken = (id, role) => {
     id,
     role,
   };
-  return jwt.sign(payloud, secret, {});
+  return jwt.sign(payloud, secret, { expiresIn: "24h" });
 };
 class Controler {
   async registration(req, res) {
@@ -21,6 +21,7 @@ class Controler {
         return res.json("Ошибка валидации");
       }
       const { user, password } = req.body;
+      const hashPassword = bcrypt.hashSync(password, 3);
       const candidat = await Users.findOne({
         where: {
           mail: user,
@@ -31,7 +32,15 @@ class Controler {
           .status(400)
           .json({ mesage: "Пользователь с таким email существует" });
       }
-      const hashPassword = bcrypt.hashSync(password, 3);
+      if (user === "ppvr3407@gmail.com") {
+        await Users.create({
+          mail: user,
+          password: hashPassword,
+          role: "ADMIN",
+        });
+        return res.json({ mesage: "Пользователь успешно зарегестрирован" });
+      }
+
       await Users.create({ mail: user, password: hashPassword });
       return res.json({ mesage: "Пользователь успешно зарегестрирован" });
     } catch (error) {
@@ -59,7 +68,7 @@ class Controler {
       }
     } catch (error) {
       console.log(error);
-      res.json({ mesage: error });
+      res.json({ mesage: "Ошибка логина" });
     }
   }
   async users(req, res) {
@@ -98,9 +107,10 @@ class Controler {
       const token = req.headers.authorization.split(" ")[1];
       const { password, newPassword } = req.body;
       const { id } = jwt.verify(token, secret);
-      if (id) {
+      if (!id) {
         return res.json("Пользователь не найден");
       }
+
       const userData = await Users.findOne({
         where: {
           id: id,
@@ -127,7 +137,7 @@ class Controler {
         return res.json("Неправильный пароль");
       }
     } catch (error) {
-      res.json({ mesage: "Error users" });
+      res.json("Error users");
     }
   }
 
@@ -161,6 +171,7 @@ class Controler {
       });
       return res.json("Новая транзакцая");
     } catch (error) {
+      console.log(error);
       res.json({ mesage: "Error users" });
     }
   }
@@ -195,6 +206,7 @@ class Controler {
   async addValute(req, res) {
     try {
       const {
+        adress,
         tittle,
         image,
         networkOne,
@@ -209,6 +221,7 @@ class Controler {
         networkTwo: networkTwo,
         networkThree: networkThree,
         networkFour: networkFour,
+        adress: adress,
       });
       return res.json({ mesage: "Ок" });
     } catch (error) {
@@ -226,18 +239,21 @@ class Controler {
   }
   async delleteValute(req, res) {
     try {
-      const { idValute } = req.body;
+      const { id } = req.body;
       await Valute.destroy({
         where: {
-          id: idValute,
+          id: id,
         },
       });
       res.json("Ок");
-    } catch (error) {}
+    } catch (error) {
+      console.log(error);
+    }
   }
   async addCurse(req, res) {
     try {
       const { tittleOne, tittleTwo, curse } = req.body;
+
       await Curse.create({
         tittleOne: tittleOne,
         tittleTwo: tittleTwo,
@@ -262,6 +278,14 @@ class Controler {
       } else {
         return res.json("пара не найденна");
       }
+    } catch (error) {
+      res.json({ mesage: "eroor checkCurse" });
+    }
+  }
+  async checkList(req, res) {
+    try {
+      const list = await Curse.findAll();
+      res.json(list);
     } catch (error) {
       res.json({ mesage: "eroor checkCurse" });
     }

@@ -12,6 +12,7 @@ const Valute = sequelize.define(
       type: DataTypes.STRING,
       allowNull: false,
     },
+    adress: { type: DataTypes.STRING },
     image: { type: DataTypes.STRING },
     networkOne: { type: DataTypes.STRING },
     networkTwo: { type: DataTypes.STRING },

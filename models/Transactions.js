@@ -30,10 +30,10 @@ const Transactions = sequelize.define(
       defaultValue: true,
     },
     amountСoming: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.STRING,
     },
     amountLeaving: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.STRING,
     },
     status: {
       type: DataTypes.STRING,

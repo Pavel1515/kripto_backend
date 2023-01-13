@@ -17,7 +17,7 @@ const Curse = sequelize.define(
       allowNull: false,
     },
     curse: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.STRING,
       allowNull: false,
     },
   },

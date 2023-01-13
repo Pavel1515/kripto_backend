@@ -12,7 +12,7 @@ app.use("/kripto", authRouter);
 const start = async () => {
   try {
     await sequelize.authenticate();
-    await sequelize.sync({force: true});
+    await sequelize.sync();
     app.listen(port, () => {
       console.log(`server start of port  ${port}`);
     });
