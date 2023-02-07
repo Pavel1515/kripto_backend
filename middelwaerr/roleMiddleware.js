@@ -9,7 +9,6 @@ module.exports = function (roles) {
 
     try {
       const token = req.headers.authorization.split(" ")[1];
-      console.log(token,'ето')
       if (!token) {
         return res.json({ message: "Нету токена" });
       }
